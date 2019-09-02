@@ -21,9 +21,23 @@ namespace RESTApisDemo.Controllers
         }
         // GET: api/Products
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public IEnumerable<Product> Get(string sortDesc)
         {
-            return _productsDbContext.Products;
+            IQueryable<Product> products;
+            switch (sortDesc)
+            {
+                case "desc":
+                    products = _productsDbContext.Products.OrderByDescending(x => int.Parse(x.ProductPrice));
+                    break;
+                case "asc":
+                    products = _productsDbContext.Products.OrderBy(x => int.Parse(x.ProductPrice));
+                    break;
+                default:
+                    products = _productsDbContext.Products;
+                    break;
+            }
+
+            return products;
         }
 
         // GET: api/Products/5
