@@ -20,9 +20,13 @@ namespace RESTApisDemo.Controllers
             _productsDbContext = productsDbContext;
         }
         // GET: api/Products
+        //https://localhost:44399/api/products?pageNumber=2&pageSize=5
         [HttpGet]
-        public IEnumerable<Product> Get(string sortDesc)
+        public IEnumerable<Product> Get(string sortDesc,int? pageNumber,int? pageSize)
         {
+            int currentPage = pageNumber ?? 1;
+            int currentPageSize = pageSize ?? 5;
+
             IQueryable<Product> products;
             switch (sortDesc)
             {
@@ -37,7 +41,8 @@ namespace RESTApisDemo.Controllers
                     break;
             }
 
-            return products;
+            var productItems = products.Skip((currentPage - 1) * currentPageSize).Take(currentPageSize).ToList();
+            return productItems;
         }
 
         // GET: api/Products/5
