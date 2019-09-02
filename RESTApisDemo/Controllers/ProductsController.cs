@@ -29,7 +29,7 @@ namespace RESTApisDemo.Controllers
         }
 
         // GET: api/Products/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}", Name = "GetProduct")]
         public IActionResult Get(int id)
         {
             var product = _productRepository.GetProduct(id);
