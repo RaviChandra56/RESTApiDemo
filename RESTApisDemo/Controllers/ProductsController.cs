@@ -4,52 +4,96 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RESTApisDemo.Data;
 using RESTApisDemo.Models;
 
 namespace RESTApisDemo.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/Products")]
-    public class ProductsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
     {
-        static List<Product> _products = new List<Product>()
-        {
-            new Product { ProductId =1, ProductName ="Product 1", ProductPrice ="110"},
-            new Product { ProductId =2, ProductName ="Product 2", ProductPrice ="120"},
-            new Product { ProductId =3, ProductName ="Product 3", ProductPrice ="130"},
-        };
+        private ProductsDbContext _productsDbContext;
 
+        public ProductsController(ProductsDbContext productsDbContext)
+        {
+            _productsDbContext = productsDbContext;
+        }
+        // GET: api/Products
         [HttpGet]
-        public IActionResult GetProducts()
+        public IEnumerable<Product> Get()
         {
-            return Ok(_products);
-            //return BadRequest(); 400
-            //return NotFound(); 404
+            return _productsDbContext.Products;
         }
 
-        [HttpGet("LoadWelcomeMessage")]
-        public IActionResult GetWelcomeMessage()
+        // GET: api/Products/5
+        [HttpGet("{id}", Name = "Get")]
+        public IActionResult Get(int id)
         {
-            return Ok("Welcome to Web api");
+            var product = _productsDbContext.Products.SingleOrDefault(x => x.ProductId == id);
+            if(product == null)
+            {
+                return NotFound("No Record Found.....");
+            }
+
+            return Ok(product);
         }
 
+        // POST: api/Products
         [HttpPost]
         public IActionResult Post([FromBody]Product product)
         {
-            _products.Add(product);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _productsDbContext.Products.Add(product);
+            _productsDbContext.SaveChanges(true);
             return StatusCode(StatusCodes.Status201Created);
         }
 
+        // PUT: api/Products/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]Product product)
+        public IActionResult Put(int id, [FromBody] Product product)
         {
-            _products[id] = product;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != product.ProductId)
+
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _productsDbContext.Products.Update(product);
+                _productsDbContext.SaveChanges(true);
+            }
+            catch(Exception)
+            {
+                return NotFound("No record found against this Id....");
+            }
+
+            return Ok("Product Updated...");
         }
 
+        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _products.RemoveAt(id);
+            var product = _productsDbContext.Products.SingleOrDefault(x => x.ProductId == id);
+            if (product == null)
+            {
+                return NotFound("No Record Found.....");
+            }
+
+            _productsDbContext.Products.Remove(product);
+            _productsDbContext.SaveChanges(true);
+            return Ok("Product Deleted...");
         }
     }
 }

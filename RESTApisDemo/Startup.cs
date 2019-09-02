@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RESTApisDemo.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace RESTApisDemo
 {
@@ -26,10 +28,11 @@ namespace RESTApisDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddXmlSerializerFormatters().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDbContext<ProductsDbContext>(option => option.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ProductsDB;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ProductsDbContext productsDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -42,6 +45,7 @@ namespace RESTApisDemo
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            productsDbContext.Database.EnsureCreated();
         }
     }
 }
