@@ -10,7 +10,7 @@ namespace RESTApisDemo.Controllers
 {
     [ApiVersion("1.0")]
     [Produces("application/json")]
-    [Route("api/movies")]
+    [Route("api/v{version:apiVersion}/movies")] //https://localhost:44399/api/v2/movies
     [ApiController]
     public class MoviesController : ControllerBase
     {
