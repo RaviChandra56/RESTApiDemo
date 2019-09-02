@@ -9,7 +9,7 @@ using RESTApisDemo.Models;
 namespace RESTApisDemo.Controllers
 {
     [ApiVersion("2.0")]
-    [Route("api/movies")]
+    [Route("api/v{version:apiVersion}/movies")]
     [ApiController]
     public class MovieV2Controller : ControllerBase
     {
