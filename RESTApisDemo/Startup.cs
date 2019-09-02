@@ -29,6 +29,7 @@ namespace RESTApisDemo
         {
             services.AddMvc().AddXmlSerializerFormatters().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<ProductsDbContext>(option => option.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ProductsDB;"));
+            services.AddApiVersioning();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
