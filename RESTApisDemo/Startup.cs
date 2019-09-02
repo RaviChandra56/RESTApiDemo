@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using RESTApisDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using RESTApisDemo.Services;
 
 namespace RESTApisDemo
 {
@@ -31,6 +32,7 @@ namespace RESTApisDemo
             services.AddMvc().AddXmlSerializerFormatters().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<ProductsDbContext>(option => option.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ProductsDB;"));
             services.AddApiVersioning(x => x.ApiVersionReader = new MediaTypeApiVersionReader());//header key ="Accept" & Value ="application/json;v=1.0"
+            services.AddScoped<IProduct, ProductRepository>(); //DI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
