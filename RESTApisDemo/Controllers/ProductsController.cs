@@ -22,26 +22,27 @@ namespace RESTApisDemo.Controllers
         // GET: api/Products
         //https://localhost:44399/api/products?pageNumber=2&pageSize=5
         [HttpGet]
-        public IEnumerable<Product> Get(string sortDesc,int? pageNumber,int? pageSize)
+        public IEnumerable<Product> Get(string sortDesc,int? pageNumber,int? pageSize,string searchProduct)
         {
             int currentPage = pageNumber ?? 1;
             int currentPageSize = pageSize ?? 5;
-
-            IQueryable<Product> products;
-            switch (sortDesc)
+            
+            IQueryable<Product> products = _productsDbContext.Products.Where(x => x.ProductName.StartsWith(searchProduct)); //1. search Implementation
+            
+            switch (sortDesc) //2. sort Implementation
             {
                 case "desc":
-                    products = _productsDbContext.Products.OrderByDescending(x => int.Parse(x.ProductPrice));
+                    products = products.OrderByDescending(x => int.Parse(x.ProductPrice));
                     break;
                 case "asc":
-                    products = _productsDbContext.Products.OrderBy(x => int.Parse(x.ProductPrice));
+                    products = products.OrderBy(x => int.Parse(x.ProductPrice));
                     break;
                 default:
-                    products = _productsDbContext.Products;
                     break;
             }
+            
+            var productItems = products.Skip((currentPage - 1) * currentPageSize).Take(currentPageSize).ToList(); //3. pagination
 
-            var productItems = products.Skip((currentPage - 1) * currentPageSize).Take(currentPageSize).ToList();
             return productItems;
         }
 
